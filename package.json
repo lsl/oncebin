@@ -8,11 +8,11 @@
     "db:migrate:prod": "wrangler d1 execute oncebin-db --remote --file=schema.sql"
   },
   "dependencies": {
-    "hono": "^4"
+    "hono": "^4.11.9"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4",
-    "typescript": "^5",
-    "wrangler": "^3"
+    "@cloudflare/workers-types": "^4.20260210.0",
+    "typescript": "^5.9.3",
+    "wrangler": "^4.64.0"
   }
 }

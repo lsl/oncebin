@@ -5,7 +5,7 @@ compatibility_date = "2025-01-01"
 [[d1_databases]]
 binding = "DB"
 database_name = "oncebin-db"
-database_id = "YOUR_DATABASE_ID"
+database_id = "4ed9ce17-5ba1-4152-8a6b-a80a0eb77099"
 
 [triggers]
 crons = ["0 3 * * *"]

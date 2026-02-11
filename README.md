@@ -41,10 +41,10 @@ Copy the `database_id` from the output and replace `YOUR_DATABASE_ID` in `wrangl
 
 ```bash
 # Local development
-npx wrangler d1 execute oncebin-db --local --file=schema.sql
+npm run db:migrate:local
 
 # Production
-npx wrangler d1 execute oncebin-db --remote --file=schema.sql
+npm run db:migrate:prod
 ```
 
 ### Development

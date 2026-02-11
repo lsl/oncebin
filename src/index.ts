@@ -24,7 +24,7 @@ app.get('/o/:id', async (c) => {
 
 app.get('/api/status', async (c) => {
   const secretsHeld = await c.env.DB.prepare(
-    "SELECT COUNT(*) AS n FROM pastes WHERE burned = 0 AND created_at > datetime('now', '-7 days')"
+    "SELECT COUNT(*) AS n FROM pastes WHERE burned = 0 AND created_at > datetime('now', '-30 days')"
   )
     .first<{ n: number }>()
     .then((r) => r?.n ?? 0);
@@ -70,7 +70,7 @@ app.post('/api/paste/:id/burn', async (c) => {
 
   const batchResults = await c.env.DB.batch([
     c.env.DB.prepare(
-      "UPDATE pastes SET burned = 1, read_at = datetime('now') WHERE id = ? AND burned = 0 AND created_at > datetime('now', '-7 days')"
+      "UPDATE pastes SET burned = 1, read_at = datetime('now') WHERE id = ? AND burned = 0 AND created_at > datetime('now', '-30 days')"
     ).bind(id),
     c.env.DB.prepare(
       'SELECT encrypted_content, iv, burned, created_at, read_at FROM pastes WHERE id = ?'
@@ -78,11 +78,6 @@ app.post('/api/paste/:id/burn', async (c) => {
   ]);
 
   const updated = batchResults[0].meta.changes > 0;
-  if (updated) {
-    await c.env.DB.prepare(
-      "INSERT INTO stats (key, value) VALUES ('total_revealed', 1) ON CONFLICT(key) DO UPDATE SET value = value + 1"
-    ).run();
-  }
   const rows = batchResults[1].results as Array<{
     encrypted_content: string;
     iv: string;
@@ -97,9 +92,21 @@ app.post('/api/paste/:id/burn', async (c) => {
   }
 
   if (updated) {
+    const encrypted = paste.encrypted_content;
+    const iv = paste.iv;
+
+    await c.env.DB.batch([
+      c.env.DB.prepare(
+        'UPDATE pastes SET encrypted_content = "", iv = "" WHERE id = ?'
+      ).bind(id),
+      c.env.DB.prepare(
+        "INSERT INTO stats (key, value) VALUES ('total_revealed', 1) ON CONFLICT(key) DO UPDATE SET value = value + 1"
+      ),
+    ]);
+
     return c.json({
-      encrypted: paste.encrypted_content,
-      iv: paste.iv,
+      encrypted,
+      iv,
     });
   }
 
@@ -114,7 +121,7 @@ app.get('/api/paste/:id/status', async (c) => {
   const id = c.req.param('id');
 
   const paste = await c.env.DB.prepare(
-    "SELECT burned, created_at, read_at, (burned = 0 AND created_at < datetime('now', '-7 days')) AS is_expired FROM pastes WHERE id = ?"
+    "SELECT burned, created_at, read_at, (burned = 0 AND created_at < datetime('now', '-30 days')) AS is_expired FROM pastes WHERE id = ?"
   )
     .bind(id)
     .first<{
@@ -161,12 +168,13 @@ export default {
     env: WorkerEnv,
     _ctx: ExecutionContext
   ) {
+    // Cleanup: read receipts (burned=1) and unopened secrets (burned=0) older than 30 days
     await env.DB.prepare(
       "DELETE FROM pastes WHERE burned = 1 AND read_at < datetime('now', '-30 days')"
     ).run();
 
     await env.DB.prepare(
-      "DELETE FROM pastes WHERE burned = 0 AND created_at < datetime('now', '-7 days')"
+      "DELETE FROM pastes WHERE burned = 0 AND created_at < datetime('now', '-30 days')"
     ).run();
   },
 };

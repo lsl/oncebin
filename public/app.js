@@ -238,7 +238,7 @@
         }
 
         var data = await response.json();
-        var url = window.location.origin + '/p/' + data.id + '#' + result.key;
+        var url = window.location.origin + '/o/' + data.id + '#' + result.key;
 
         resultUrl.value = url;
         hide(createForm);
@@ -510,7 +510,7 @@
     var path = window.location.pathname;
     if (path === '/') {
       initHome();
-    } else if (path.indexOf('/p/') === 0) {
+    } else if (path.indexOf('/o/') === 0) {
       initView();
     }
   }

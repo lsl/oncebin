@@ -109,7 +109,10 @@ function layout(title: string, body: string): string {
 <body>
   <header class="container">
     <nav>
-      <ul><li><a href="/"><strong>OnceBin</strong></a></li></ul>
+      <ul>
+        <li><a href="/"><strong>OnceBin</strong></a></li>
+        <li><a href="/status">Status</a></li>
+      </ul>
     </nav>
   </header>
   <main class="container">${body}</main>
@@ -152,6 +155,37 @@ export function homePage(): string {
     <section id="recent-section" class="hidden">
       <h3>Your Recent Pastes</h3>
       <div id="recent-list"></div>
+    </section>
+  `);
+}
+
+export type StatusPageData = {
+  secretsHeld: number;
+  totalRevealed: number;
+};
+
+export function statusPage(data: StatusPageData): string {
+  return layout('OnceBin - Status', `
+    <section>
+      <hgroup style="text-align:center;margin-bottom:2rem;">
+        <h1>Status</h1>
+        <p>Live usage stats. No secrets, just numbers.</p>
+      </hgroup>
+
+      <div class="grid" style="text-align:center;margin-bottom:2rem;">
+        <div>
+          <strong style="font-size:2.5rem;display:block;">${data.secretsHeld.toLocaleString()}</strong>
+          <span style="color:var(--pico-muted-color);">Secrets held (unrevealed)</span>
+        </div>
+        <div>
+          <strong style="font-size:2.5rem;display:block;">${data.totalRevealed.toLocaleString()}</strong>
+          <span style="color:var(--pico-muted-color);">Total revealed</span>
+        </div>
+      </div>
+
+      <p style="text-align:center;font-size:0.875rem;color:var(--pico-muted-color);">
+        Held = one-time links not yet opened (within 7-day retention). Revealed = ever opened.
+      </p>
     </section>
   `);
 }

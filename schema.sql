@@ -9,3 +9,8 @@ CREATE TABLE IF NOT EXISTS pastes (
 
 CREATE INDEX IF NOT EXISTS idx_pastes_cleanup
   ON pastes(burned, created_at);
+
+CREATE TABLE IF NOT EXISTS stats (
+  key TEXT PRIMARY KEY,
+  value INTEGER NOT NULL DEFAULT 0
+);

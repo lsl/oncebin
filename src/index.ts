@@ -1,6 +1,6 @@
 import { Hono } from 'hono';
 
-import { homePage, viewPage } from './pages';
+import { homePage, viewPage, statusPage } from './pages';
 import { clientJS } from './client';
 
 type Env = {
@@ -25,6 +25,27 @@ app.get('/', (c) => {
 
 app.get('/p/:id', (c) => {
   return c.html(viewPage());
+});
+
+app.get('/status', async (c) => {
+  const secretsHeld = await c.env.DB.prepare(
+    "SELECT COUNT(*) AS n FROM pastes WHERE burned = 0 AND created_at > datetime('now', '-7 days')"
+  )
+    .first<{ n: number }>()
+    .then((r) => r?.n ?? 0);
+
+  const totalRevealed = await c.env.DB.prepare(
+    "SELECT COALESCE((SELECT value FROM stats WHERE key = 'total_revealed'), 0) AS n"
+  )
+    .first<{ n: number }>()
+    .then((r) => r?.n ?? 0);
+
+  return c.html(
+    statusPage({
+      secretsHeld,
+      totalRevealed,
+    })
+  );
 });
 
 app.get('/app.js', (c) => {
@@ -76,6 +97,11 @@ app.post('/api/paste/:id/burn', async (c) => {
   ]);
 
   const updated = batchResults[0].meta.changes > 0;
+  if (updated) {
+    await c.env.DB.prepare(
+      "INSERT INTO stats (key, value) VALUES ('total_revealed', 1) ON CONFLICT(key) DO UPDATE SET value = value + 1"
+    ).run();
+  }
   const rows = batchResults[1].results as Array<{
     encrypted_content: string;
     iv: string;

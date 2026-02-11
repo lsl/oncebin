@@ -76,4 +76,4 @@ npm run deploy
 5. Their browser decrypts the content using the key from the URL fragment
 6. The paste is permanently destroyed on the server — subsequent attempts get a 410 Gone
 
-Your recent pastes are tracked in localStorage so you can see if they've been read or are still pending.
+Your recent secrets are tracked in localStorage so you can see if they've been read or are still pending.

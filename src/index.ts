@@ -148,7 +148,14 @@ type WorkerEnv = {
 };
 
 export default {
-  fetch: app.fetch,
+  async fetch(request: Request, env: WorkerEnv, ctx: ExecutionContext) {
+    const url = new URL(request.url);
+    if (url.hostname === 'www.oncebin.com') {
+      url.hostname = 'oncebin.com';
+      return Response.redirect(url.toString(), 301);
+    }
+    return app.fetch(request, env, ctx);
+  },
   async scheduled(
     _event: ScheduledEvent,
     env: WorkerEnv,

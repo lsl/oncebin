@@ -2,6 +2,8 @@ name = "oncebin"
 main = "src/index.ts"
 compatibility_date = "2025-01-01"
 
+route = "oncebin.com/*"
+
 [assets]
 directory = "./public/"
 binding = "ASSETS"

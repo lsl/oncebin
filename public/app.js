@@ -332,6 +332,7 @@
   function createPasteRow(paste) {
     var row = document.createElement('div');
     row.className = 'recent-paste';
+    var status = paste.status || 'pending';
 
     var info = document.createElement('div');
     info.className = 'recent-paste-info';
@@ -343,10 +344,14 @@
     var meta = document.createElement('div');
     meta.className = 'recent-paste-meta';
 
-    var status = paste.status || 'pending';
     var badge = document.createElement('span');
     badge.className = 'status-badge status-' + status;
-    badge.textContent = status;
+    if (status === 'burned') {
+      badge.textContent = 'Burned';
+    } else {
+      badge.textContent =
+        status.charAt(0).toUpperCase() + status.slice(1);
+    }
 
     var time = document.createElement('span');
     time.textContent = timeAgo(paste.created_at);
@@ -360,11 +365,35 @@
     removeBtn.className = 'outline secondary';
     removeBtn.style.cssText =
       'width:auto;padding:0.25rem 0.75rem;font-size:0.75rem;margin:0;';
-    removeBtn.textContent = 'Remove';
-    removeBtn.addEventListener('click', function () {
-      removePaste(paste.id);
-      loadRecentPastes();
-    });
+    if (status === 'pending') {
+      removeBtn.textContent = 'Burn';
+      removeBtn.addEventListener('click', function () {
+        removeBtn.disabled = true;
+        fetch('/api/paste/' + paste.id + '/burn', {
+          method: 'POST',
+        })
+          .then(function (response) {
+            if (!response.ok) {
+              throw new Error('Failed to burn secret');
+            }
+            updatePasteStatus(paste.id, 'burned');
+            return null;
+          })
+          .then(function () {
+            loadRecentPastes();
+          })
+          .catch(function () {
+            removeBtn.disabled = false;
+            alert('Could not burn this secret. Please try again.');
+          });
+      });
+    } else {
+      removeBtn.textContent = 'Remove';
+      removeBtn.addEventListener('click', function () {
+        removePaste(paste.id);
+        loadRecentPastes();
+      });
+    }
 
     row.appendChild(info);
     row.appendChild(removeBtn);

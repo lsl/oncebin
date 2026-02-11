@@ -1,4 +1,4 @@
-# OnceBin
+# Oncebin
 
 A secure pastebin where secrets self-destruct after one view. Share passwords, API keys, and other sensitive data through one-time links.
 

@@ -3,11 +3,11 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>OnceBin - About</title>
-  <meta name="description" content="Learn about OnceBin, how it works, and how we think about security.">
-  <meta property="og:title" content="OnceBin - About">
-  <meta property="og:description" content="Learn about OnceBin, how it works, and how we think about security.">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+  <title>Oncebin - About</title>
+  <meta name="description" content="Learn about Oncebin, how it works, and how we think about security.">
+  <meta property="og:title" content="Oncebin - About">
+  <meta property="og:description" content="Learn about Oncebin, how it works, and how we think about security.">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.classless.min.css">
   <link rel="icon" href="/img/favicon.svg">
   <style>
     .encrypt-note { text-align: center; font-size: 0.8rem; color: var(--pico-muted-color); margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--pico-muted-border-color); }
@@ -15,7 +15,7 @@
   </style>
 </head>
 <body>
-  <header class="container">
+  <header>
     <nav>
       <ul>
         <li>
@@ -34,21 +34,24 @@
       </ul>
     </nav>
   </header>
-  <main class="container">
-    <section>
-      <hgroup style="text-align:center;margin-bottom:2rem;">
-        <h1>About OnceBin</h1>
-        <p>OnceBin lets you share secrets that self-destruct after a single view.</p>
-      </hgroup>
-      <p>
-        OnceBin is a small, focused tool for sharing passwords, API keys, and other sensitive snippets
-        without leaving them sitting around in chat logs or email inboxes. You create a one-time link, send it,
-        and once it is opened the encrypted payload is destroyed.
-      </p>
-    </section>
+  <main>
+    <article>
+      <header>
+        <hgroup style="text-align:center;margin-bottom:2rem;">
+          <h1>About Oncebin</h1>
+          <h2>Oncebin lets you create and share one time secrets.</h2>
+        </hgroup>
+      </header>
+      <section>
+        <p>
+          Oncebin is a small, focused tool for sharing passwords, API keys, and other sensitive snippets
+          without leaving them sitting around in chat logs or email inboxes. You create a one-time link, send it,
+          and once opened the encrypted secrets are automatically destroyed.
+        </p>
+      </section>
 
-    <section style="margin-top:3rem;">
-      <h2>Contact</h2>
+      <section>
+        <h2>Contact</h2>
       <p>If you have questions, feedback, or would like to report an issue, you can reach us directly.</p>
       <form id="contact-form">
         <div class="grid">
@@ -61,50 +64,50 @@
           Message
           <textarea id="contact-message" name="message" rows="5" required placeholder="Tell us what’s on your mind..."></textarea>
         </label>
-        <button type="submit">Email oncebin.com</button>
+        <button type="submit">Email us</button>
       </form>
       <p style="margin-top:0.5rem;font-size:0.875rem;color:var(--pico-muted-color);">
-        Submitting will open your email client with a pre-filled message to <strong>oncebin.com</strong>.
+        Submitting will open your email client with a pre-filled message.
       </p>
     </section>
 
-    <section style="margin-top:3rem;">
-      <h2>FAQ</h2>
-      <div class="faq-item">
-        <h3>What happens when someone opens my link?</h3>
-        <p>
-          The encrypted secret is fetched once, decrypted in the browser, and immediately marked as burned.
-          After that, the same link will only show that the secret has already been viewed or has expired.
-        </p>
-      </div>
-      <div class="faq-item">
-        <h3>How long are secrets kept?</h3>
-        <p>
-          Secrets that have not been opened are automatically deleted after 7 days. Secrets that have been
-          opened are deleted after 30 days. These time limits are enforced by a background job.
-        </p>
-      </div>
-      <div class="faq-item">
-        <h3>Can OnceBin see my secrets?</h3>
-        <p>
-          Secrets are encrypted in your browser before they are sent to OnceBin. The server only stores the
-          encrypted blob and never sees the plaintext. The decryption key lives in the URL fragment and is
-          never sent to the server.
-        </p>
-      </div>
-      <div class="faq-item">
-        <h3>Is this a password manager?</h3>
-        <p>
-          No. OnceBin is designed for short-lived sharing, not long-term storage. Use a dedicated password
-          manager for ongoing storage of your secrets.
-        </p>
-      </div>
-    </section>
+      <section>
+        <h2>FAQ</h2>
+        <section class="faq-item">
+          <h3>What happens when someone opens my link?</h3>
+          <p>
+            The encrypted secret is fetched once, decrypted in the browser, and immediately marked as burned.
+            After that, the same link will only show that the secret has already been viewed or has expired.
+          </p>
+        </section>
+        <section class="faq-item">
+          <h3>How long are secrets kept?</h3>
+          <p>
+            Secrets that have not been opened are automatically deleted after 7 days. Secrets that have been
+            opened are deleted after 30 days. These time limits are enforced by a background job.
+          </p>
+        </section>
+        <section class="faq-item">
+          <h3>Can Oncebin see my secrets?</h3>
+          <p>
+            Secrets are encrypted in your browser before they are sent to Oncebin. The server only stores the
+            encrypted blob and never sees the plaintext. The decryption key lives in the URL fragment and is
+            never sent to the server.
+          </p>
+        </section>
+        <section class="faq-item">
+          <h3>Is this a password manager?</h3>
+          <p>
+            No. Oncebin is designed for short-lived sharing, not long-term storage. Use a dedicated password
+            manager for ongoing storage of your secrets.
+          </p>
+        </section>
+      </section>
 
-    <section style="margin-top:3rem;">
-      <h2>Security Overview</h2>
+      <section>
+        <h2>Security Overview</h2>
       <p>
-        OnceBin is built around a simple principle: store as little as possible, for as short a time as
+        Oncebin is built around a simple principle: store as little as possible, for as short a time as
         possible. Encryption happens client-side using modern browser crypto APIs before any data reaches
         our database.
       </p>
@@ -115,13 +118,14 @@
         <li>We track aggregate counters (like total secrets revealed) but never store plaintext content.</li>
       </ul>
       <p style="margin-top:1rem;">
-        Like any tool, OnceBin should be one part of your security story. Use unique passwords, enable
+        Like any tool, Oncebin should be one part of your security story. Use unique passwords, enable
         multi-factor authentication where possible, and treat secret links as you would any other sensitive
         information.
       </p>
-    </section>
+      </section>
+    </article>
   </main>
-  <footer class="container">
+  <footer>
     <p class="encrypt-note">End-to-end encrypted. Your secrets never touch our servers in plain text.</p>
   </footer>
   <script>
@@ -142,7 +146,7 @@
           }
           return;
         }
-        var subject = 'OnceBin feedback';
+        var subject = 'Oncebin feedback';
         var bodyParts = [];
         if (email) {
           bodyParts.push('From: ' + email);
@@ -150,7 +154,7 @@
         }
         bodyParts.push(message);
         var body = bodyParts.join('\n');
-        var mailto = 'mailto:hello@oncebin.com?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+        var mailto = 'mailto:hello@Oncebin.com?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
         window.location.href = mailto;
       });
     })();

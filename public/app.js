@@ -502,7 +502,7 @@
       var main = document.querySelector('main');
       if (main) {
         main.innerHTML =
-          '<article><header><strong>Unsupported Browser</strong></header><p>OnceBin requires a modern browser with encryption support. Please use a recent version of Chrome, Firefox, Safari, or Edge.</p></article>';
+          '<article><header><strong>Unsupported Browser</strong></header><p>Oncebin requires a modern browser with encryption support. Please use a recent version of Chrome, Firefox, Safari, or Edge.</p></article>';
       }
       return;
     }

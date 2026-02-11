@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>OnceBin - Secret shared with you</title>
+  <title>Oncebin - Secret shared with you</title>
   <meta name="description" content="Share secrets that self-destruct after one view. End-to-end encrypted.">
-  <meta property="og:title" content="OnceBin - Secret shared with you">
+  <meta property="og:title" content="Oncebin - Secret shared with you">
   <meta property="og:description" content="Share secrets that self-destruct after one view. End-to-end encrypted.">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.classless.min.css">
   <link rel="icon" href="/img/favicon.svg">
   <style>
     .hidden { display: none !important; }
@@ -18,15 +18,15 @@
   </style>
 </head>
 <body>
-  <header class="container">
+  <header>
     <nav>
       <ul>
         <li>
           <a href="/">
             <picture>
-              <source srcset="/img/banner-v1-dark.svg" media="(prefers-color-scheme: dark)">
-              <source srcset="/img/banner-v1-light.svg" media="(prefers-color-scheme: light)">
-              <img src="/img/banner-v1-light.svg" alt="Oncebin">
+              <source srcset="/img/banner-dark.svg" media="(prefers-color-scheme: dark)">
+              <source srcset="/img/banner-light.svg" media="(prefers-color-scheme: light)">
+              <img src="/img/banner-light.svg" alt="Oncebin">
             </picture>
           </a>
         </li>
@@ -37,34 +37,38 @@
       </ul>
     </nav>
   </header>
-  <main class="container">
-    <article id="view-reveal">
-      <header><strong>Someone shared a secret with you</strong></header>
-      <p>This secret can only be viewed <strong>once</strong>. It will be permanently destroyed after you reveal it.</p>
-      <button id="reveal-btn">Reveal Secret</button>
-    </article>
+  <main>
+    <article>
+      <article id="view-reveal">
+        <header>
+          <h2>Someone shared a secret with you</h2>
+        </header>
+        <p>This secret can only be viewed <strong>once</strong>. It will be permanently destroyed after you reveal it.</p>
+        <button id="reveal-btn">Reveal Secret</button>
+      </article>
 
-    <article id="view-content" class="hidden">
-      <header>
-        <strong>Secret Content</strong>
-        <span id="copy-content-feedback" style="margin-left:1rem;"></span>
-      </header>
-      <pre id="paste-content"></pre>
-      <footer>
-        <div class="btn-group" style="margin-bottom:0.5rem;">
-          <button id="copy-content-btn" class="secondary outline">Copy to Clipboard</button>
-        </div>
-        <small>This secret has been permanently destroyed and can no longer be accessed.</small>
-      </footer>
-    </article>
+      <article id="view-content" class="hidden">
+        <header>
+          <h2>Secret Content</h2>
+          <span id="copy-content-feedback" style="margin-left:1rem;"></span>
+        </header>
+        <pre id="paste-content"></pre>
+        <footer>
+          <div class="btn-group" style="margin-bottom:0.5rem;">
+            <button id="copy-content-btn" class="secondary outline">Copy to Clipboard</button>
+          </div>
+          <small>This secret has been permanently destroyed and can no longer be accessed.</small>
+        </footer>
+      </article>
 
-    <article id="view-error" class="hidden">
-      <header><strong id="error-title"></strong></header>
-      <p id="error-message"></p>
-      <footer><a href="/">Create a new secret</a></footer>
+      <article id="view-error" class="hidden">
+        <header><h2 id="error-title"></h2></header>
+        <p id="error-message"></p>
+        <footer><a href="/">Create a new secret</a></footer>
+      </article>
     </article>
   </main>
-  <footer class="container">
+  <footer>
     <p class="encrypt-note">End-to-end encrypted. Your secrets never touch our servers in plain text.</p>
   </footer>
   <script src="/app.js"></script>

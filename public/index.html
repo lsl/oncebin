@@ -3,11 +3,11 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>OnceBin - Share secrets securely</title>
+  <title>Oncebin - Share one time secrets securely</title>
   <meta name="description" content="Share secrets that self-destruct after one view. End-to-end encrypted.">
-  <meta property="og:title" content="OnceBin - Share secrets securely">
+  <meta property="og:title" content="Oncebin - Share secrets securely">
   <meta property="og:description" content="Share secrets that self-destruct after one view. End-to-end encrypted.">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.classless.min.css">
   <link rel="icon" href="/img/favicon.svg">
   <style>
     textarea#content { font-family: 'Courier New', Courier, monospace; resize: vertical; min-height: 10rem; }
@@ -33,7 +33,7 @@
   </style>
 </head>
 <body>
-  <header class="container">
+  <header>
     <nav>
       <ul>
         <li>
@@ -52,39 +52,42 @@
       </ul>
     </nav>
   </header>
-  <main class="container">
-    <section>
-      <hgroup style="text-align:center;margin-bottom:2rem;">
-        <h1>Share a secret</h1>
-        <p>Create a one-time link that self-destructs after being read.</p>
-      </hgroup>
-
-      <div id="create-form">
-        <textarea id="content" placeholder="Paste your secret here..." rows="6" autofocus></textarea>
-        <small id="size-info">0 B / 50 KB</small>
-        <button id="create-btn" disabled>Create Secret Link</button>
-      </div>
-
-      <article id="create-result" class="hidden">
-        <header>Your secret link is ready</header>
-        <input type="text" id="result-url" readonly>
-        <span id="copy-feedback"></span>
-        <div class="btn-group">
-          <button id="copy-btn">Copy Link</button>
-          <button id="new-btn" class="secondary outline">Create Another</button>
+  <main>
+    <article>
+      <header>
+        <hgroup style="text-align:center;margin-bottom:2rem;">
+          <h1>Share a one time secret</h1>
+          <h2>Create a one-time link that self-deletes after being read.</h2>
+        </hgroup>
+      </header>
+      <section>
+        <div id="create-form">
+          <textarea id="content" placeholder="Paste your secret here..." rows="6" autofocus></textarea>
+          <small id="size-info">0 B / 50 KB</small>
+          <button id="create-btn" disabled>Create Secret Link</button>
         </div>
-        <footer>
-          <small>This link can only be opened <strong>once</strong>. After viewing, the secret is permanently destroyed.</small>
-        </footer>
-      </article>
-    </section>
 
-    <section id="recent-section" class="hidden">
-      <h3>Your Recent Secrets</h3>
-      <div id="recent-list"></div>
-    </section>
+        <article id="create-result" class="hidden">
+          <header>Your secret link is ready</header>
+          <input type="text" id="result-url" readonly>
+          <span id="copy-feedback"></span>
+          <div class="btn-group">
+            <button id="copy-btn">Copy Link</button>
+            <button id="new-btn" class="secondary outline">Create Another</button>
+          </div>
+          <footer>
+            <small>This link can only be opened <strong>once</strong>. After viewing, the secret is permanently destroyed.</small>
+          </footer>
+        </article>
+      </section>
+
+      <section id="recent-section" class="hidden">
+        <h3>Your Recent Secrets</h3>
+        <div id="recent-list"></div>
+      </section>
+    </article>
   </main>
-  <footer class="container">
+  <footer>
     <p class="encrypt-note">End-to-end encrypted. Your secrets never touch our servers in plain text.</p>
   </footer>
   <script src="/app.js"></script>

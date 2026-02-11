@@ -1,4 +1,4 @@
-export const clientJS = `(function() {
+(function () {
   'use strict';
 
   var MAX_SIZE = 50 * 1024;
@@ -7,28 +7,39 @@ export const clientJS = `(function() {
 
   function base64urlEncode(bytes) {
     return btoa(String.fromCharCode.apply(null, bytes))
-      .replace(/\\+/g, '-')
-      .replace(/\\//g, '_')
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
       .replace(/=+$/, '');
   }
 
   function base64urlDecode(str) {
     str = str.replace(/-/g, '+').replace(/_/g, '/');
-    while (str.length % 4) { str += '='; }
-    return Uint8Array.from(atob(str), function(c) { return c.charCodeAt(0); });
+    while (str.length % 4) {
+      str += '=';
+    }
+    return Uint8Array.from(atob(str), function (c) {
+      return c.charCodeAt(0);
+    });
   }
 
   function toBase64(buffer) {
     var bytes = new Uint8Array(buffer);
     var chunks = [];
     for (var i = 0; i < bytes.length; i += 8192) {
-      chunks.push(String.fromCharCode.apply(null, bytes.subarray(i, Math.min(i + 8192, bytes.length))));
+      chunks.push(
+        String.fromCharCode.apply(
+          null,
+          bytes.subarray(i, Math.min(i + 8192, bytes.length))
+        )
+      );
     }
     return btoa(chunks.join(''));
   }
 
   function fromBase64(str) {
-    return Uint8Array.from(atob(str), function(c) { return c.charCodeAt(0); });
+    return Uint8Array.from(atob(str), function (c) {
+      return c.charCodeAt(0);
+    });
   }
 
   async function encryptContent(text) {
@@ -48,7 +59,7 @@ export const clientJS = `(function() {
     return {
       encrypted: toBase64(encrypted),
       iv: toBase64(iv),
-      key: base64urlEncode(new Uint8Array(exportedKey))
+      key: base64urlEncode(new Uint8Array(exportedKey)),
     };
   }
 
@@ -87,12 +98,16 @@ export const clientJS = `(function() {
   function savePaste(entry) {
     var pastes = getSavedPastes();
     pastes.unshift(entry);
-    if (pastes.length > 50) { pastes.length = 50; }
+    if (pastes.length > 50) {
+      pastes.length = 50;
+    }
     localStorage.setItem(STORAGE_KEY, JSON.stringify(pastes));
   }
 
   function removePaste(id) {
-    var pastes = getSavedPastes().filter(function(p) { return p.id !== id; });
+    var pastes = getSavedPastes().filter(function (p) {
+      return p.id !== id;
+    });
     localStorage.setItem(STORAGE_KEY, JSON.stringify(pastes));
   }
 
@@ -109,21 +124,37 @@ export const clientJS = `(function() {
 
   // --- Helpers ---
 
-  function $(sel) { return document.querySelector(sel); }
-  function show(el) { el.classList.remove('hidden'); }
-  function hide(el) { el.classList.add('hidden'); }
+  function $(sel) {
+    return document.querySelector(sel);
+  }
+  function show(el) {
+    el.classList.remove('hidden');
+  }
+  function hide(el) {
+    el.classList.add('hidden');
+  }
 
   function timeAgo(dateStr) {
     var seconds = Math.floor((Date.now() - new Date(dateStr).getTime()) / 1000);
-    if (seconds < 60) { return 'just now'; }
-    if (seconds < 3600) { return Math.floor(seconds / 60) + 'm ago'; }
-    if (seconds < 86400) { return Math.floor(seconds / 3600) + 'h ago'; }
-    if (seconds < 604800) { return Math.floor(seconds / 86400) + 'd ago'; }
+    if (seconds < 60) {
+      return 'just now';
+    }
+    if (seconds < 3600) {
+      return Math.floor(seconds / 60) + 'm ago';
+    }
+    if (seconds < 86400) {
+      return Math.floor(seconds / 3600) + 'h ago';
+    }
+    if (seconds < 604800) {
+      return Math.floor(seconds / 86400) + 'd ago';
+    }
     return new Date(dateStr).toLocaleDateString();
   }
 
   function formatBytes(bytes) {
-    if (bytes < 1024) { return bytes + ' B'; }
+    if (bytes < 1024) {
+      return bytes + ' B';
+    }
     return (bytes / 1024).toFixed(1) + ' KB';
   }
 
@@ -143,7 +174,10 @@ export const clientJS = `(function() {
     if (feedbackEl) {
       feedbackEl.textContent = 'Copied!';
       feedbackEl.className = 'copied';
-      setTimeout(function() { feedbackEl.textContent = ''; feedbackEl.className = ''; }, 2000);
+      setTimeout(function () {
+        feedbackEl.textContent = '';
+        feedbackEl.className = '';
+      }, 2000);
     }
   }
 
@@ -160,9 +194,11 @@ export const clientJS = `(function() {
     var copyFeedback = $('#copy-feedback');
     var newBtn = $('#new-btn');
 
-    if (!content) { return; }
+    if (!content) {
+      return;
+    }
 
-    content.addEventListener('input', function() {
+    content.addEventListener('input', function () {
       var bytes = new TextEncoder().encode(content.value).length;
       sizeInfo.textContent = formatBytes(bytes) + ' / 50 KB';
       if (bytes > MAX_SIZE) {
@@ -174,12 +210,16 @@ export const clientJS = `(function() {
       }
     });
 
-    createBtn.addEventListener('click', async function() {
+    createBtn.addEventListener('click', async function () {
       var text = content.value;
-      if (!text.trim()) { return; }
+      if (!text.trim()) {
+        return;
+      }
 
       var bytes = new TextEncoder().encode(text).length;
-      if (bytes > MAX_SIZE) { return; }
+      if (bytes > MAX_SIZE) {
+        return;
+      }
 
       createBtn.disabled = true;
       createBtn.setAttribute('aria-busy', 'true');
@@ -189,7 +229,7 @@ export const clientJS = `(function() {
         var response = await fetch('/api/paste', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ encrypted: result.encrypted, iv: result.iv })
+          body: JSON.stringify({ encrypted: result.encrypted, iv: result.iv }),
         });
 
         if (!response.ok) {
@@ -208,7 +248,7 @@ export const clientJS = `(function() {
           id: data.id,
           url: url,
           created_at: new Date().toISOString(),
-          status: 'pending'
+          status: 'pending',
         });
 
         loadRecentPastes();
@@ -220,16 +260,16 @@ export const clientJS = `(function() {
       }
     });
 
-    copyBtn.addEventListener('click', function() {
+    copyBtn.addEventListener('click', function () {
       copyToClipboard(resultUrl.value, copyFeedback);
     });
 
-    resultUrl.addEventListener('click', function() {
+    resultUrl.addEventListener('click', function () {
       resultUrl.select();
       copyToClipboard(resultUrl.value, copyFeedback);
     });
 
-    newBtn.addEventListener('click', function() {
+    newBtn.addEventListener('click', function () {
       content.value = '';
       sizeInfo.textContent = '0 B / 50 KB';
       createBtn.disabled = true;
@@ -244,7 +284,9 @@ export const clientJS = `(function() {
   async function loadRecentPastes() {
     var section = $('#recent-section');
     var list = $('#recent-list');
-    if (!section || !list) { return; }
+    if (!section || !list) {
+      return;
+    }
 
     var pastes = getSavedPastes();
     if (pastes.length === 0) {
@@ -277,7 +319,10 @@ export const clientJS = `(function() {
       var response = await fetch('/api/paste/' + id + '/status');
       var data = await response.json();
       if (data.status && data.status !== 'pending') {
-        updatePasteStatus(id, data.status === 'not_found' ? 'expired' : data.status);
+        updatePasteStatus(
+          id,
+          data.status === 'not_found' ? 'expired' : data.status
+        );
       }
     } catch (e) {
       // ignore network errors during status check
@@ -313,9 +358,10 @@ export const clientJS = `(function() {
 
     var removeBtn = document.createElement('button');
     removeBtn.className = 'outline secondary';
-    removeBtn.style.cssText = 'width:auto;padding:0.25rem 0.75rem;font-size:0.75rem;margin:0;';
+    removeBtn.style.cssText =
+      'width:auto;padding:0.25rem 0.75rem;font-size:0.75rem;margin:0;';
     removeBtn.textContent = 'Remove';
-    removeBtn.addEventListener('click', function() {
+    removeBtn.addEventListener('click', function () {
       removePaste(paste.id);
       loadRecentPastes();
     });
@@ -339,43 +385,66 @@ export const clientJS = `(function() {
     var errorTitle = $('#error-title');
     var errorMessage = $('#error-message');
 
-    if (!revealBtn) { return; }
+    if (!revealBtn) {
+      return;
+    }
 
     var pathParts = window.location.pathname.split('/');
     var pasteId = pathParts[2];
     var encryptionKey = window.location.hash.slice(1);
 
     if (!pasteId || !encryptionKey) {
-      showError('Invalid Link', 'This link is incomplete. Make sure you copied the entire URL including everything after the # symbol.');
+      showError(
+        'Invalid Link',
+        'This link is incomplete. Make sure you copied the entire URL including everything after the # symbol.'
+      );
       return;
     }
 
-    revealBtn.addEventListener('click', async function() {
+    revealBtn.addEventListener('click', async function () {
       revealBtn.disabled = true;
       revealBtn.setAttribute('aria-busy', 'true');
 
       try {
-        var response = await fetch('/api/paste/' + pasteId + '/burn', { method: 'POST' });
+        var response = await fetch('/api/paste/' + pasteId + '/burn', {
+          method: 'POST',
+        });
         var data = await response.json();
 
         if (!response.ok) {
           if (data.error === 'already_read') {
-            showError('Already Viewed', 'This secret has already been viewed and permanently destroyed.');
+            showError(
+              'Already Viewed',
+              'This secret has already been viewed and permanently destroyed.'
+            );
           } else if (data.error === 'expired') {
-            showError('Expired', 'This secret has expired and can no longer be accessed.');
+            showError(
+              'Expired',
+              'This secret has expired and can no longer be accessed.'
+            );
           } else {
-            showError('Not Found', 'This secret does not exist or has already been destroyed.');
+            showError(
+              'Not Found',
+              'This secret does not exist or has already been destroyed.'
+            );
           }
           return;
         }
 
-        var decrypted = await decryptContent(data.encrypted, data.iv, encryptionKey);
+        var decrypted = await decryptContent(
+          data.encrypted,
+          data.iv,
+          encryptionKey
+        );
         pasteContent.textContent = decrypted;
         hide(revealSection);
         show(contentSection);
       } catch (e) {
         if (e.name === 'OperationError') {
-          showError('Decryption Failed', 'Could not decrypt this secret. The link may be corrupted or incomplete.');
+          showError(
+            'Decryption Failed',
+            'Could not decrypt this secret. The link may be corrupted or incomplete.'
+          );
         } else {
           showError('Error', 'Something went wrong. Please try again.');
         }
@@ -383,7 +452,7 @@ export const clientJS = `(function() {
     });
 
     if (copyContentBtn) {
-      copyContentBtn.addEventListener('click', function() {
+      copyContentBtn.addEventListener('click', function () {
         copyToClipboard(pasteContent.textContent, copyContentFeedback);
       });
     }
@@ -403,7 +472,8 @@ export const clientJS = `(function() {
     if (!window.crypto || !window.crypto.subtle) {
       var main = document.querySelector('main');
       if (main) {
-        main.innerHTML = '<article><header><strong>Unsupported Browser</strong></header><p>OnceBin requires a modern browser with encryption support. Please use a recent version of Chrome, Firefox, Safari, or Edge.</p></article>';
+        main.innerHTML =
+          '<article><header><strong>Unsupported Browser</strong></header><p>OnceBin requires a modern browser with encryption support. Please use a recent version of Chrome, Firefox, Safari, or Edge.</p></article>';
       }
       return;
     }
@@ -421,4 +491,4 @@ export const clientJS = `(function() {
   } else {
     init();
   }
-})();`;
+})();

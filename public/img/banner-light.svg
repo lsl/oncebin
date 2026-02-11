@@ -1,0 +1,17 @@
+<svg width="260" height="52" viewBox="0 0 260 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g>
+    <rect x="4" y="2" width="36" height="48" rx="6" fill="#1e293b" fill-opacity="0.06" stroke="#334155" stroke-width="2" />
+    <path d="M28 2 L40 14" stroke="#334155" stroke-width="2" stroke-linecap="round" />
+    <path d="M28 2 V10 A4 4 0 0 0 32 14 H40" stroke="#334155" stroke-width="2" fill="#f1f5f9" />
+    <line x1="12" y1="22" x2="32" y2="22" stroke="#334155" stroke-width="2" stroke-linecap="round" opacity="0.8" />
+    <line x1="12" y1="29" x2="28" y2="29" stroke="#334155" stroke-width="2" stroke-linecap="round" opacity="0.45" />
+    <line x1="12" y1="36" x2="22" y2="36" stroke="#334155" stroke-width="2" stroke-linecap="round" opacity="0.18" />
+    <rect x="25" y="38" width="10" height="8" rx="2" fill="#2563eb" />
+    <path d="M28 38 V35 A2 2 0 0 1 32 35 V38" stroke="#2563eb" stroke-width="1.5" fill="none" />
+    <circle cx="30" cy="42.5" r="1" fill="white" />
+  </g>
+  <text x="56" y="35" font-family="'DM Sans', sans-serif" font-size="30" font-weight="600" fill="#1e293b" letter-spacing="-0.5">
+    <tspan>once</tspan>
+    <tspan fill="#2563eb">bin</tspan>
+  </text>
+</svg>

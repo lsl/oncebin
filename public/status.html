@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>OnceBin - Status</title>
+  <meta name="description" content="Share secrets that self-destruct after one view. End-to-end encrypted.">
+  <meta property="og:title" content="OnceBin - Status">
+  <meta property="og:description" content="Share secrets that self-destruct after one view. End-to-end encrypted.">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+  <link rel="icon" href="/img/favicon.svg">
+  <style>
+    .encrypt-note { text-align: center; font-size: 0.8rem; color: var(--pico-muted-color); margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--pico-muted-border-color); }
+  </style>
+</head>
+<body>
+  <header class="container">
+    <nav>
+      <ul>
+        <li>
+          <a href="/">
+            <picture>
+              <source srcset="/img/banner-v1-dark.svg" media="(prefers-color-scheme: dark)">
+              <source srcset="/img/banner-v1-light.svg" media="(prefers-color-scheme: light)">
+              <img src="/img/banner-v1-light.svg" alt="Oncebin">
+            </picture>
+          </a>
+        </li>
+        <li><a href="/status">Status</a></li>
+      </ul>
+    </nav>
+  </header>
+  <main class="container">
+    <section>
+      <hgroup style="text-align:center;margin-bottom:2rem;">
+        <h1>Status</h1>
+        <p>Live usage stats. No secrets, just numbers.</p>
+      </hgroup>
+
+      <div class="grid" style="text-align:center;margin-bottom:2rem;">
+        <div>
+          <strong id="secrets-held" style="font-size:2.5rem;display:block;">—</strong>
+          <span style="color:var(--pico-muted-color);">Secrets held (unrevealed)</span>
+        </div>
+        <div>
+          <strong id="total-revealed" style="font-size:2.5rem;display:block;">—</strong>
+          <span style="color:var(--pico-muted-color);">Total revealed</span>
+        </div>
+      </div>
+
+      <p style="text-align:center;font-size:0.875rem;color:var(--pico-muted-color);">
+        Held = one-time links not yet opened (within 7-day retention). Revealed = ever opened.
+      </p>
+    </section>
+  </main>
+  <footer class="container">
+    <p class="encrypt-note">End-to-end encrypted. Your secrets never touch our servers in plain text.</p>
+  </footer>
+  <script>
+    (function () {
+      fetch('/api/status')
+        .then(function (r) { return r.json(); })
+        .then(function (d) {
+          document.getElementById('secrets-held').textContent = (d.secretsHeld != null ? d.secretsHeld : 0).toLocaleString();
+          document.getElementById('total-revealed').textContent = (d.totalRevealed != null ? d.totalRevealed : 0).toLocaleString();
+        })
+        .catch(function () {
+          document.getElementById('secrets-held').textContent = '?';
+          document.getElementById('total-revealed').textContent = '?';
+        });
+    })();
+  </script>
+</body>
+</html>

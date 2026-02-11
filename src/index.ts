@@ -1,11 +1,9 @@
 import { Hono } from 'hono';
 
-import { homePage, viewPage, statusPage } from './pages';
-import { clientJS } from './client';
-
 type Env = {
   Bindings: {
     DB: D1Database;
+    ASSETS: Fetcher;
   };
 };
 
@@ -19,15 +17,12 @@ function generateId(): string {
   return Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('');
 }
 
-app.get('/', (c) => {
-  return c.html(homePage());
+app.get('/p/:id', async (c) => {
+  const url = new URL('/view.html', c.req.url);
+  return c.env.ASSETS.fetch(url.toString());
 });
 
-app.get('/p/:id', (c) => {
-  return c.html(viewPage());
-});
-
-app.get('/status', async (c) => {
+app.get('/api/status', async (c) => {
   const secretsHeld = await c.env.DB.prepare(
     "SELECT COUNT(*) AS n FROM pastes WHERE burned = 0 AND created_at > datetime('now', '-7 days')"
   )
@@ -40,21 +35,7 @@ app.get('/status', async (c) => {
     .first<{ n: number }>()
     .then((r) => r?.n ?? 0);
 
-  return c.html(
-    statusPage({
-      secretsHeld,
-      totalRevealed,
-    })
-  );
-});
-
-app.get('/app.js', (c) => {
-  return new Response(clientJS, {
-    headers: {
-      'Content-Type': 'application/javascript; charset=utf-8',
-      'Cache-Control': 'public, max-age=3600',
-    },
-  });
+  return c.json({ secretsHeld, totalRevealed });
 });
 
 app.post('/api/paste', async (c) => {

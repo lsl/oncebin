@@ -64,7 +64,7 @@ npm run deploy
 | Limit | Value |
 |---|---|
 | Max paste size | 50 KB |
-| Unread paste expiry | 7 days |
+| Unread paste expiry | 30 days |
 | Burned paste record retention | 30 days |
 
 ## How It Works

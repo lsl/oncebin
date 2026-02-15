@@ -42,7 +42,7 @@ store() {
     const enc = Buffer.concat([
       cipher.update(plaintext, "utf8"),
       cipher.final(),
-      cipher.getTag()
+      cipher.getAuthTag()
     ]);
 
     const body = JSON.stringify({

@@ -150,26 +150,11 @@ app.get('/api/paste/:id/status', async (c) => {
   return c.json({ status: 'pending', created_at: paste.created_at });
 });
 
-type WorkerEnv = {
-  DB: D1Database;
-};
-
 export default {
-  async fetch(request: Request, env: WorkerEnv, ctx: ExecutionContext) {
-    const url = new URL(request.url);
-    if (url.protocol === 'http:') {
-      url.protocol = 'https:';
-      return Response.redirect(url.toString(), 301);
-    }
-    if (url.hostname === 'www.oncebin.com') {
-      url.hostname = 'oncebin.com';
-      return Response.redirect(url.toString(), 301);
-    }
-    return app.fetch(request, env, ctx);
-  },
+  fetch: app.fetch,
   async scheduled(
     _event: ScheduledEvent,
-    env: WorkerEnv,
+    env: { DB: D1Database },
     _ctx: ExecutionContext
   ) {
     // Cleanup: read receipts (burned=1) and unopened secrets (burned=0) older than 30 days

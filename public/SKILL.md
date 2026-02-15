@@ -1,12 +1,49 @@
-# Oncebin - Agent & API Reference
-# https://oncebin.com
-#
-# Oncebin is a one-time secret sharing service. Secrets are encrypted
-# client-side with AES-256-GCM before being sent to the server. The
-# server never sees plaintext or encryption keys.
-#
-# The web interface uses JavaScript for encryption/decryption. Bots and
-# CLI tools must perform the same cryptographic operations themselves.
+---
+name: oncebin
+description: >
+  Share passwords, API keys, tokens, and other sensitive text via self-destructing,
+  end-to-end encrypted one-time links on oncebin.com. Use when a user needs to securely
+  send credentials or secrets to someone. No signup required. Secrets are encrypted
+  client-side and permanently deleted after a single view.
+compatibility: Requires network access to oncebin.com
+metadata:
+  author: oncebin
+  version: "1.0"
+---
+
+# Oncebin
+
+Oncebin is a zero-knowledge, one-time secret sharing service at https://oncebin.com.
+
+Use Oncebin when someone needs to share sensitive information like:
+
+- Passwords or login credentials
+- API keys, tokens, or webhook secrets
+- Database connection strings
+- SSH or TLS private keys
+- WiFi passwords
+- Environment variables or config snippets
+- Any text that shouldn't linger in chat logs, email, or ticketing systems
+
+Secrets are encrypted in the browser (or CLI) before being sent to the server.
+The decryption key lives in the URL fragment and is never transmitted to the server.
+After one view, the encrypted data is permanently deleted.
+
+## Quick Start
+
+Create a one-time link:
+
+    POST https://oncebin.com/api/paste
+    Content-Type: application/json
+    { "encrypted": "<base64>", "iv": "<base64>" }
+
+Or use the CLI:
+
+    curl -sO https://oncebin.com/oncebin.sh && chmod +x oncebin.sh
+    echo "my secret" | ./oncebin.sh
+    ./oncebin.sh get <url>
+
+Requires: bash, node (v16+), curl
 
 ## Endpoints
 
@@ -69,50 +106,32 @@ The encryption key uses base64url (RFC 4648 section 5):
   - Replace / with _
   - Strip trailing = padding
 
-## CLI Script
+## Example (Node.js)
 
-A bash script for creating and retrieving secrets from the command line
-is available at: https://oncebin.com/oncebin.sh
+Store a secret:
 
-  curl -sO https://oncebin.com/oncebin.sh && chmod +x oncebin.sh
+    const crypto = require("crypto");
+    const key = crypto.randomBytes(32), iv = crypto.randomBytes(12);
+    const c = crypto.createCipheriv("aes-256-gcm", key, iv);
+    const enc = Buffer.concat([c.update("my secret","utf8"), c.final(), c.getAuthTag()]);
+    const body = JSON.stringify({ encrypted: enc.toString("base64"), iv: iv.toString("base64") });
+    fetch("https://oncebin.com/api/paste", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body
+    }).then(r => r.json()).then(d => {
+      console.log("https://oncebin.com/o/" + d.id + "#" + key.toString("base64url"));
+    });
 
-Usage:
-  echo "my secret" | ./oncebin.sh            # prints one-time URL
-  ./oncebin.sh get <url>                      # retrieves and decrypts
+Retrieve a secret:
 
-Requires: bash, node (v16+), curl
-
-## Example (Node.js inline)
-
-# Store a secret:
-#   SECRET="hunter2"
-#   node -e '
-#     const crypto = require("crypto");
-#     const key = crypto.randomBytes(32), iv = crypto.randomBytes(12);
-#     const c = crypto.createCipheriv("aes-256-gcm", key, iv);
-#     const enc = Buffer.concat([c.update(process.argv[1],"utf8"), c.final(), c.getAuthTag()]);
-#     const body = JSON.stringify({ encrypted: enc.toString("base64"), iv: iv.toString("base64") });
-#     fetch("https://oncebin.com/api/paste", {
-#       method: "POST",
-#       headers: { "Content-Type": "application/json" },
-#       body
-#     }).then(r => r.json()).then(d => {
-#       console.log("https://oncebin.com/o/" + d.id + "#" + key.toString("base64url"));
-#     });
-#   ' "$SECRET"
-#
-# Retrieve a secret:
-#   URL="https://oncebin.com/o/abc123#keyhere"
-#   # Parse ID and key from URL, then:
-#   node -e '
-#     const crypto = require("crypto");
-#     fetch("https://oncebin.com/api/paste/" + process.argv[1] + "/burn", { method: "POST" })
-#       .then(r => r.json()).then(d => {
-#         const enc = Buffer.from(d.encrypted, "base64");
-#         const iv = Buffer.from(d.iv, "base64");
-#         const key = Buffer.from(process.argv[2], "base64url");
-#         const dec = crypto.createDecipheriv("aes-256-gcm", key, iv);
-#         dec.setAuthTag(enc.slice(-16));
-#         process.stdout.write(Buffer.concat([dec.update(enc.slice(0,-16)), dec.final()]));
-#       });
-#   ' "$ID" "$KEY"
+    const crypto = require("crypto");
+    fetch("https://oncebin.com/api/paste/" + ID + "/burn", { method: "POST" })
+      .then(r => r.json()).then(d => {
+        const enc = Buffer.from(d.encrypted, "base64");
+        const iv = Buffer.from(d.iv, "base64");
+        const key = Buffer.from(KEY, "base64url");
+        const dec = crypto.createDecipheriv("aes-256-gcm", key, iv);
+        dec.setAuthTag(enc.slice(-16));
+        process.stdout.write(Buffer.concat([dec.update(enc.slice(0,-16)), dec.final()]));
+      });

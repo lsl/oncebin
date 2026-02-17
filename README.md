@@ -1,6 +1,6 @@
 # Oncebin
 
-[Oncebin.com](https://oncebin.com) is a secure pastebin where secrets self-destruct after one view. Share passwords, API keys, and other sensitive data through one-time-secret links that never reach our servers unecnrypted.
+[Oncebin](https://oncebin.com) is a secure pastebin where secrets self-destruct after one view. Share passwords, API keys, and other sensitive data through one-time-secret links that never reach our servers unecnrypted.
 
 ## Security
 

@@ -1,51 +1,65 @@
 #!/usr/bin/env bash
 # Smoke test: store a secret via oncebin.sh, retrieve it, verify round-trip.
-# Starts wrangler dev, runs the test, then tears down.
+# Runs against remote by default, or local dev, and will start a local dev server if needed.
 #
-# Usage: ./test.sh
-
+# Usage: bin/test [remote|local]
+#
 set -euo pipefail
 
-cd "$(dirname "$0")"
+cd "$(dirname "$0")/.."
 
-PORT=8787
-BASE="http://localhost:$PORT"
+PORT="${PORT:-8787}"
+MODE="${1:-remote}"
+BASE=
 PID=
+server_started=0
 
 cleanup() {
-  if [ -n "$PID" ]; then
-    kill "$PID" 2>/dev/null
+  if [ "$server_started" -eq 1 ] && [ -n "$PID" ]; then
+    kill "$PID" 2>/dev/null || true
     wait "$PID" 2>/dev/null || true
   fi
 }
 trap cleanup EXIT
 
-# Ensure local D1 schema is up to date
-npx wrangler d1 migrations apply oncebin-db --local 2>/dev/null
+if [ "$MODE" = "remote" ]; then
+  BASE="https://oncebin.com"
+elif [ "$MODE" = "local" ]; then
+  BASE="http://localhost:$PORT"
 
-# Start dev server in background
-npx wrangler dev --port "$PORT" &>"$PWD/.test-server.log" &
-PID=$!
+  # Ensure local D1 schema is up to date
+  npx wrangler d1 migrations apply oncebin-db --local 2>/dev/null
 
-# Wait for server to be ready
-printf 'Waiting for dev server'
-for i in $(seq 1 30); do
-  if curl -sf "$BASE/" >/dev/null 2>&1; then
-    printf ' ready\n'
-    break
+  # Start dev server in background only if nothing is already listening
+  if ! curl -sf "$BASE/" >/dev/null 2>&1; then
+    npx wrangler dev --port "$PORT" &>"$PWD/.test-server.log" &
+    PID=$!
+    server_started=1
+
+    # Wait for server to be ready
+    printf 'Waiting for dev server'
+    for i in $(seq 1 30); do
+      if curl -sf "$BASE/" >/dev/null 2>&1; then
+        printf ' ready\n'
+        break
+      fi
+      if ! kill -0 "$PID" 2>/dev/null; then
+        printf ' FAILED (server exited)\n'
+        cat .test-server.log
+        exit 1
+      fi
+      printf '.'
+      sleep 1
+    done
+
+    if ! curl -sf "$BASE/" >/dev/null 2>&1; then
+      printf ' FAILED (timeout)\n'
+      cat .test-server.log
+      exit 1
+    fi
   fi
-  if ! kill -0 "$PID" 2>/dev/null; then
-    printf ' FAILED (server exited)\n'
-    cat .test-server.log
-    exit 1
-  fi
-  printf '.'
-  sleep 1
-done
-
-if ! curl -sf "$BASE/" >/dev/null 2>&1; then
-  printf ' FAILED (timeout)\n'
-  cat .test-server.log
+else
+  echo "Usage: bin/test [remote|local]" >&2
   exit 1
 fi
 
@@ -119,3 +133,4 @@ run_test "multiline content"    test_multiline
 
 printf '\n%d passed, %d failed\n' "$PASS" "$FAIL"
 [ "$FAIL" -eq 0 ]
+

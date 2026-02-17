@@ -9,6 +9,12 @@ Wrangler() {
     npx wrangler d1 execute "$DB" --local --json "$@"
   fi
 }
+FREE_TIER_MB=500
+FREE_TIER_BYTES=$((FREE_TIER_MB * 1024 * 1024))
+db_size_bytes=""
+if [[ "$REMOTE" = true || "$REMOTE" = 1 ]]; then
+  db_size_bytes=$(npx wrangler d1 info "$DB" --json 2>/dev/null | grep -o '"database_size": [0-9]*' | grep -o '[0-9]*' || true)
+fi
 QUERIES="
 SELECT COUNT(*) AS n FROM pastes WHERE burned = 0 AND created_at > datetime('now', '-30 days');
 SELECT COALESCE((SELECT value FROM stats WHERE key = 'total_revealed'), 0) AS n;
@@ -45,11 +51,20 @@ echo "Revealed (24h):                $revealed_24h"
 echo "Revealed (7d):                 $revealed_7d"
 if [[ "$created_7d" -gt 0 ]]; then
   pct=$((100 * revealed_7d / created_7d))
-  echo "Reveal rate (7d):               ${pct}%"
+  echo "Reveal rate (7d):              ${pct}%"
 else
-  echo "Reveal rate (7d):               —"
+  echo "Reveal rate (7d):              —"
 fi
 echo "Avg hours to reveal:           $avg_hours_reveal"
 echo "Oldest unrevealed (days):      $oldest_held_days"
 echo "Burned pending cleanup:        $burned_pending"
 echo "Total rows in pastes:          $total_rows"
+if [[ -n "$db_size_bytes" ]]; then
+  db_mb_x100=$((db_size_bytes * 100 / 1024 / 1024))
+  db_mb_whole=$((db_mb_x100 / 100))
+  db_mb_frac=$(printf '%02d' $((db_mb_x100 % 100)))
+  pct_used=$((db_size_bytes * 100 / FREE_TIER_BYTES))
+  echo "Database size:                 ${db_mb_whole}.${db_mb_frac} MB (${pct_used}% of ${FREE_TIER_MB} MB free tier)"
+else
+  echo "Database size:                 (remote only; use REMOTE=1)"
+fi

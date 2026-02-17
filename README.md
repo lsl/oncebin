@@ -1,13 +1,15 @@
 # Oncebin
 
-A secure pastebin where secrets self-destruct after one view. Share passwords, API keys, and other sensitive data through one-time links.
+[Oncebin.com](https://oncebin.com) - End to end encrypted one time secret sharing.
+
+Oncebin is a secure pastebin where secrets self-destruct after one view. Share passwords, API keys, and other sensitive data through one-time-secret links that never reach our servers unecnrypted.
 
 ## Security
 
 - **End-to-end encrypted** — content is encrypted in the browser using AES-256-GCM before being sent to the server. The encryption key lives in the URL fragment (`#key`) which is never transmitted to the server.
 - **One-time viewing** — each paste can only be read once. After viewing, the encrypted content is permanently burned.
 - **Zero knowledge** — the server never sees plaintext content. Even if the database is compromised, the data is useless without the encryption key.
-- **Auto-expiry** — unread pastes expire after 7 days.
+- **Auto-expiry** — all secrets are deleted after 30 days.
 
 ## Stack
 
@@ -64,8 +66,7 @@ npm run deploy
 | Limit | Value |
 |---|---|
 | Max paste size | 50 KB |
-| Unread paste expiry | 30 days |
-| Burned paste record retention | 30 days |
+| Secret expiry | 30 days |
 
 ## How It Works
 

@@ -141,13 +141,8 @@ export default {
     env: { DB: D1Database },
     _ctx: ExecutionContext
   ) {
-    // Cleanup: read receipts (burned=1) and unopened secrets (burned=0) older than 30 days
     await env.DB.prepare(
-      "DELETE FROM pastes WHERE burned = 1 AND read_at < datetime('now', '-30 days')"
-    ).run();
-
-    await env.DB.prepare(
-      "DELETE FROM pastes WHERE burned = 0 AND created_at < datetime('now', '-30 days')"
+      "DELETE FROM pastes WHERE created_at < datetime('now', '-30 days')"
     ).run();
   },
 };

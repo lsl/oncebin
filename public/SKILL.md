@@ -96,8 +96,7 @@ To retrieve a secret:
 ## Limits
 
 - Max plaintext size: ~50 KB (100 KB encrypted)
-- Secrets expire after 30 days if unread
-- Secrets are permanently deleted immediately after being read
+- All secrets are deleted after 30 days
 
 ## Base64url Encoding
 

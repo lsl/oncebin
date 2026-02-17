@@ -9,6 +9,17 @@
 - **Zero knowledge** — the server never sees plaintext content. Even if the database is compromised, the data is useless without the encryption key.
 - **Auto-expiry** — all secrets are deleted after 30 days.
 
+## How It Works
+
+1. You paste a secret and click "Create Secret Link"
+2. Your browser encrypts the content with a random AES-256-GCM key
+3. Only the encrypted blob is sent to the server — the key stays in the URL fragment (`#...`)
+4. The recipient clicks "Reveal Secret" which fetches and atomically burns the paste
+5. Their browser decrypts the content using the key from the URL fragment
+6. The paste is permanently destroyed on the server — subsequent attempts get a 410 Gone
+7. Your recent secrets are tracked in localStorage so you can see if they've been read or are still pending.
+
+
 ## Stack
 
 - [Cloudflare Workers](https://workers.cloudflare.com/) — serverless runtime
@@ -65,13 +76,3 @@ npm run deploy
 |---|---|
 | Max paste size | 50 KB |
 | Secret expiry | 30 days |
-
-## How It Works
-
-1. You paste a secret and click "Create Secret Link"
-2. Your browser encrypts the content with a random AES-256-GCM key
-3. Only the encrypted blob is sent to the server — the key stays in the URL fragment (`#...`)
-4. The recipient clicks "Reveal Secret" which fetches and atomically burns the paste
-5. Their browser decrypts the content using the key from the URL fragment
-6. The paste is permanently destroyed on the server — subsequent attempts get a 410 Gone
-7. Your recent secrets are tracked in localStorage so you can see if they've been read or are still pending.

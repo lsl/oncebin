@@ -19,7 +19,6 @@
 6. The paste is permanently destroyed on the server — subsequent attempts get a 410 Gone
 7. Your recent secrets are tracked in localStorage so you can see if they've been read or are still pending.
 
-
 ## Stack
 
 - [Cloudflare Workers](https://workers.cloudflare.com/) — serverless runtime

@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Copyright (c) 2026 Louis Laugesen. MIT License.
 # Smoke test: store a secret via oncebin.sh, retrieve it, verify round-trip.
 # Runs against remote by default, or local dev, and will start a local dev server if needed.
 #

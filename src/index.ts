@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Louis Laugesen. MIT License.
+
 import { Hono } from 'hono';
 
 type Env = {

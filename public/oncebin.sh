@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Copyright (c) 2026 Louis Laugesen. MIT License.
 # oncebin.sh - Create and retrieve one-time secrets via oncebin.com
 #
 # Usage:

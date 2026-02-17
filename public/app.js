@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Louis Laugesen. MIT License.
+
 (function () {
   'use strict';
 

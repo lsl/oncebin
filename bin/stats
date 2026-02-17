@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Copyright (c) 2026 Louis Laugesen. MIT License.
 set -euo pipefail
 
 MODE="${1:-remote}"

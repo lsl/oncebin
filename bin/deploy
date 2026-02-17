@@ -4,4 +4,5 @@ set -euo pipefail
 cd "$(git rev-parse --show-toplevel)"
 
 bin/test local
+npx wrangler d1 migrations apply oncebin-db --remote
 npx wrangler deploy

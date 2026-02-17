@@ -41,10 +41,10 @@ Copy the `database_id` from the output and replace `YOUR_DATABASE_ID` in `wrangl
 
 ```bash
 # Local development
-npm run db:migrate:local
+npm run migrate:local
 
 # Production
-npm run db:migrate:prod
+npm run migrate:prod
 ```
 
 ### Development

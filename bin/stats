@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+set -e
+REMOTE="${REMOTE:-true}"
+DB=oncebin-db
+Wrangler() {
+  if [[ "$REMOTE" = true || "$REMOTE" = 1 ]]; then
+    npx wrangler d1 execute "$DB" --remote --json "$@"
+  else
+    npx wrangler d1 execute "$DB" --local --json "$@"
+  fi
+}
+QUERIES="
+SELECT COUNT(*) AS n FROM pastes WHERE burned = 0 AND created_at > datetime('now', '-30 days');
+SELECT COALESCE((SELECT value FROM stats WHERE key = 'total_revealed'), 0) AS n;
+SELECT COUNT(*) AS n FROM pastes WHERE created_at > datetime('now', '-24 hours');
+SELECT COUNT(*) AS n FROM pastes WHERE created_at > datetime('now', '-7 days');
+SELECT COUNT(*) AS n FROM pastes WHERE burned = 1 AND read_at > datetime('now', '-24 hours');
+SELECT COUNT(*) AS n FROM pastes WHERE burned = 1 AND read_at > datetime('now', '-7 days');
+SELECT COUNT(*) AS n FROM pastes WHERE burned = 1;
+SELECT COUNT(*) AS n FROM pastes;
+SELECT COALESCE(ROUND(AVG((julianday(read_at) - julianday(created_at)) * 24)), 0) AS n FROM pastes WHERE burned = 1 AND read_at IS NOT NULL;
+SELECT COALESCE(ROUND((julianday('now') - julianday(MIN(created_at)))), 0) AS n FROM pastes WHERE burned = 0 AND created_at > datetime('now', '-30 days');
+"
+nums=($(Wrangler --command "$QUERIES" | grep -o '"n": [0-9]*' | grep -o '[0-9]*'))
+if [[ ${#nums[@]} -lt 10 ]]; then
+  echo "Failed to read from D1 (use REMOTE=0 for local DB)." >&2
+  exit 1
+fi
+held=${nums[0]}
+total_revealed=${nums[1]}
+created_24h=${nums[2]}
+created_7d=${nums[3]}
+revealed_24h=${nums[4]}
+revealed_7d=${nums[5]}
+burned_pending=${nums[6]}
+total_rows=${nums[7]}
+avg_hours_reveal=${nums[8]}
+oldest_held_days=${nums[9]}
+
+echo "Secrets held (unrevealed, 30d): $held"
+echo "Total revealed (all time):     $total_revealed"
+echo "Created (24h):                 $created_24h"
+echo "Created (7d):                  $created_7d"
+echo "Revealed (24h):                $revealed_24h"
+echo "Revealed (7d):                 $revealed_7d"
+if [[ "$created_7d" -gt 0 ]]; then
+  pct=$((100 * revealed_7d / created_7d))
+  echo "Reveal rate (7d):               ${pct}%"
+else
+  echo "Reveal rate (7d):               —"
+fi
+echo "Avg hours to reveal:           $avg_hours_reveal"
+echo "Oldest unrevealed (days):      $oldest_held_days"
+echo "Burned pending cleanup:        $burned_pending"
+echo "Total rows in pastes:          $total_rows"

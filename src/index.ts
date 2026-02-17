@@ -22,22 +22,6 @@ app.get('/o/:id', async (c) => {
   return c.env.ASSETS.fetch(url.toString());
 });
 
-app.get('/api/status', async (c) => {
-  const secretsHeld = await c.env.DB.prepare(
-    "SELECT COUNT(*) AS n FROM pastes WHERE burned = 0 AND created_at > datetime('now', '-30 days')"
-  )
-    .first<{ n: number }>()
-    .then((r) => r?.n ?? 0);
-
-  const totalRevealed = await c.env.DB.prepare(
-    "SELECT COALESCE((SELECT value FROM stats WHERE key = 'total_revealed'), 0) AS n"
-  )
-    .first<{ n: number }>()
-    .then((r) => r?.n ?? 0);
-
-  return c.json({ secretsHeld, totalRevealed });
-});
-
 app.post('/api/paste', async (c) => {
   let body: { encrypted?: string; iv?: string };
   try {

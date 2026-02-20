@@ -1,9 +1,0 @@
-#!/usr/bin/env bash
-# Copyright (c) 2026 Louis Laugesen. MIT License.
-set -euo pipefail
-
-cd "$(git rev-parse --show-toplevel)"
-
-bin/test local
-npx wrangler d1 migrations apply oncebin-db --remote
-npx wrangler deploy

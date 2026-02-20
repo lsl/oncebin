@@ -29,11 +29,12 @@ elif [ "$MODE" = "local" ]; then
   BASE="http://localhost:$PORT"
 
   # Ensure local D1 schema is up to date
-  npx wrangler d1 migrations apply oncebin-db --local 2>/dev/null
+  deno task migrate:local 2>/dev/null
 
   # Start dev server in background only if nothing is already listening
   if ! curl -sf "$BASE/" >/dev/null 2>&1; then
     npx wrangler dev --port "$PORT" &>"$PWD/.test-server.log" &
+
     PID=$!
     server_started=1
 

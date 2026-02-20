@@ -1,6 +1,11 @@
 // Copyright (c) 2026 Louis Laugesen. MIT License.
 
 import { Hono } from 'hono';
+import { Layout } from './components/Layout';
+import { Home } from './pages/Home';
+import { View } from './pages/View';
+import { About } from './pages/About';
+import { Contact } from './pages/Contact';
 
 type Env = {
   Bindings: {
@@ -19,10 +24,105 @@ function generateId(): string {
   return Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('');
 }
 
-app.get('/o/:id', async (c) => {
-  const url = new URL('/view.html', c.req.url);
-  return c.env.ASSETS.fetch(url.toString());
+// --- Page Routes (TSX server-rendered) ---
+
+app.get('/', (c) =>
+  c.html(
+    <Layout
+      title="Oncebin - Share Passwords &amp; Secrets with Self-Destructing Links"
+      description="Share passwords, API keys, and credentials securely. End-to-end encrypted one-time links that self-destruct after viewing. No signup required."
+      ogTitle="Oncebin - Self-Destructing Secret Sharing"
+      ogDescription="Share passwords, API keys, and credentials with end-to-end encrypted one-time links. No signup required."
+    >
+      <Home />
+    </Layout>
+  )
+);
+
+app.get('/o/:id', (c) =>
+  c.html(
+    <Layout
+      title="Oncebin - A Secret Has Been Shared With You"
+      description="Someone shared an encrypted secret with you. View it once — it will be permanently destroyed after reading."
+      ogTitle="Oncebin - A Secret Has Been Shared With You"
+      ogDescription="Someone shared an encrypted, self-destructing secret with you via Oncebin."
+    >
+      <View />
+    </Layout>
+  )
+);
+
+app.get('/about', (c) =>
+  c.html(
+    <Layout
+      title="About Oncebin - Secure One-Time Secret Sharing"
+      description="How Oncebin keeps your shared secrets safe with end-to-end encryption, zero-knowledge architecture, and self-destructing one-time links."
+      ogTitle="About Oncebin - Secure One-Time Secret Sharing"
+      ogDescription="End-to-end encrypted, self-destructing links for sharing passwords, API keys, and credentials. No signup required."
+    >
+      <About />
+    </Layout>
+  )
+);
+
+app.get('/contact', (c) =>
+  c.html(
+    <Layout
+      title="Contact Oncebin"
+      description="Get in touch with the Oncebin team. Questions, feedback, or bug reports welcome."
+    >
+      <Contact />
+    </Layout>
+  )
+);
+
+// --- HTMX Fragment: Status Badge ---
+
+app.get('/fragments/status/:id', async (c) => {
+  const id = c.req.param('id');
+  const paste = await c.env.DB.prepare(
+    "SELECT burned, (burned = 0 AND created_at < datetime('now', '-30 days')) AS is_expired FROM pastes WHERE id = ?"
+  )
+    .bind(id)
+    .first<{ burned: number; is_expired: number }>();
+
+  if (!paste) {
+    return c.html(
+      <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400">
+        Expired
+      </span>
+    );
+  }
+
+  if (paste.burned) {
+    return c.html(
+      <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">
+        Read
+      </span>
+    );
+  }
+
+  if (paste.is_expired) {
+    return c.html(
+      <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400">
+        Expired
+      </span>
+    );
+  }
+
+  return c.html(
+    <span
+      hx-get={`/fragments/status/${id}`}
+      hx-trigger="every 60s"
+      hx-swap="outerHTML"
+      class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
+    >
+      Pending
+    </span>
+  );
 });
+
+// --- API Routes (unchanged logic) ---
 
 app.post('/api/paste', async (c) => {
   let body: { encrypted?: string; iv?: string };

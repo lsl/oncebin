@@ -1,6 +1,6 @@
 # Oncebin
 
-[Oncebin](https://oncebin.com) is a secure pastebin where secrets self-destruct after one view. Share passwords, API keys, and other sensitive data through one-time-secret links that never reach our servers unecnrypted.
+[Oncebin](https://oncebin.com) is a secure pastebin where secrets self-destruct after one view. Share passwords, API keys, and other sensitive data through one-time-secret links that never reach our servers unencrypted.
 
 ## Security
 
@@ -21,9 +21,11 @@
 
 ## Stack
 
+- [Hono](https://hono.dev/) — web framework with JSX/TSX server-side rendering
+- [HTMX](https://htmx.org/) — declarative interactivity (status polling, fragments)
+- [Tailwind CSS](https://tailwindcss.com/) v4 — utility-first styling
 - [Cloudflare Workers](https://workers.cloudflare.com/) — serverless runtime
 - [Cloudflare D1](https://developers.cloudflare.com/d1/) — SQLite database
-- [Pico CSS](https://picocss.com/) — classless styling
 - [Web Crypto API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Crypto_API) — client-side AES-256-GCM encryption
 
 ## Setup
@@ -45,29 +47,47 @@ npm install
 npx wrangler d1 create oncebin-db
 ```
 
-Copy the `database_id` from the output and replace `YOUR_DATABASE_ID` in `wrangler.toml`.
-
-### Run schema migration
-
-```bash
-# Local development
-npm run migrate:local
-
-# Production
-npm run migrate:prod
-```
+Copy the `database_id` from the output into `wrangler.jsonc`.
 
 ### Development
 
 ```bash
-npm run dev
+# Start the worker dev server
+make dev
+
+# Start Tailwind CSS watcher (in a separate terminal)
+make css
 ```
 
 ### Deploy
 
+Runs local tests, builds CSS, migrates the database, and deploys to Workers:
+
 ```bash
-npm run deploy
+make deploy
 ```
+
+### Other commands
+
+```bash
+make test           # run tests against production
+make test-local     # run tests against local dev server
+make migrate-local  # apply D1 migrations locally
+make migrate-prod   # apply D1 migrations to production
+make css-build      # one-off Tailwind build (minified)
+bin/stats           # query D1 for usage stats
+```
+
+## CLI
+
+```bash
+curl -sO https://oncebin.com/oncebin.sh && chmod +x oncebin.sh
+
+echo "my secret" | ./oncebin.sh        # create a secret
+./oncebin.sh get <url>                  # retrieve a secret
+```
+
+See [SKILL.md](https://oncebin.com/SKILL.md) for the full API documentation.
 
 ## Limits
 

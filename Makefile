@@ -1,4 +1,4 @@
-.PHONY: dev css css-build deploy test migrate-local migrate-prod
+.PHONY: dev css css-build deploy test test-local migrate-local migrate-prod
 
 dev:
 	npx wrangler dev
